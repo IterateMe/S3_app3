@@ -21,6 +21,10 @@ public class TransportLayer implements headerInterface{
         }
     }
 
+    public Vector<String> getPayloads(){
+        return payloads;
+    }
+
     @Override
     public String writeHeader() {
         // definir le premier layload comme etant la nom du fichier
