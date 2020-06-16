@@ -15,7 +15,7 @@ public class Client {
         AppliLayer application =  new AppliLayer(args[0]);
         application.readFile();
         TransportLayer transport = new TransportLayer(args[0]);
-        transport.getContent(application.getLocalContent());
+        transport.getContentFromAppliLayer(application.getLocalContent());
         transport.writeHeader();
         //transport.printPayloads();
 

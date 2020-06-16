@@ -9,6 +9,7 @@ public class TransportLayer implements headerInterface{
     String content = "";
     int headerLength = 7;
     int errorCount = 0;
+    public boolean transactionCompleted = false;
     Vector<String> payloads = new Vector<>();
 
     public TransportLayer(String file){
@@ -66,6 +67,7 @@ public class TransportLayer implements headerInterface{
             for(int i=1; i< payloads.size(); i++){
                 content += payloads.get(i);
             }
+            transactionCompleted = true;
         };
         return null;
     }
@@ -87,7 +89,7 @@ public class TransportLayer implements headerInterface{
     //////////////////////////////////////////////////////////////////////////
     // Methods for the writeHeader() method
     //////////////////////////////////////////////////////////////////////////
-    public void getContent(String content){
+    public void getContentFromAppliLayer(String content){
         this.content = content;
     }
 
@@ -143,6 +145,10 @@ public class TransportLayer implements headerInterface{
 
     public void findFileToSave(){
 
+    }
+
+    public String getContentForAppliLayer(){
+        return content;
     }
     ////////////////////////////////////////////////////////////////////////////
     // PAS DE FOOTER DANS LA COUCHE TRANSPORT DE CETTE VERSION DU PROTOCOLE

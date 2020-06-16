@@ -43,6 +43,9 @@ public class ServerThread extends Thread {
                 String received = new String(packet.getData(), 0, packet.getLength());
 
                 transport.readHeader(received);
+                if(transport.transactionCompleted){
+                    application.getRemoteContent(transport.getContentForAppliLayer());
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
