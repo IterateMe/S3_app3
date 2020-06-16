@@ -6,14 +6,13 @@ import java.util.Vector;
 
 public class TransportLayer implements headerInterface{
     String file;
-    String content;
+    String content = "";
     int headerLength = 7;
     int errorCount = 0;
     Vector<String> payloads = new Vector<>();
 
     public TransportLayer(String file){
         this.file = file;
-
     }
     public void printPayloads(){
         for(int i=0; i< payloads.size(); i++){
@@ -36,14 +35,38 @@ public class TransportLayer implements headerInterface{
     }
 
     @Override
-    public String readHeader() {
+    public String readHeader(String packet) {
         //Calculer la taille du fichier
-
         //Premier packet sera le nom du fichier a ecrire dans le repertoire local du serveur
-
         //Declarer la connexion perdu si plus de 3 erreurs
         //Reinitialiser la couche transport
-        // Transporter une erreur TransmissionErrorException
+        //Transporter une erreur TransmissionErrorException
+
+        String payload = packet.substring(7);
+        payloads.add(payload);
+        String header = packet.substring(0,7);
+        Integer numPacket = Integer.valueOf(header.substring(0,3));
+        Integer totPacket = Integer.valueOf(header.substring(4));
+        Integer payloadSyze = payloads.size();
+
+        if(numPacket != payloadSyze){
+            errorCount +=1;
+            /////////////////////////////////////////////////////
+            //RESEND
+            if(errorCount == 3){
+                //////////////////////////////////////////////////////
+                //throw TransmissionErrorException;
+            }
+            // This loop puts empty strings in the vector where the missing data is
+            for(int i=0; i< numPacket-payloadSyze; i++){
+                payloads.insertElementAt("", payloadSyze);
+            }
+        }
+        if(numPacket == totPacket && errorCount == 0){
+            for(int i=1; i< payloads.size(); i++){
+                content += payloads.get(i);
+            }
+        };
         return null;
     }
 
@@ -112,16 +135,11 @@ public class TransportLayer implements headerInterface{
     ////////////////////////////////////////////////////////////
     //Methods for the readHeader() method
     ////////////////////////////////////////////////////////////
-    public void storePackage(String pac){
-        payloads.add(pac);
-    }
-
     public String createAcknowledgement(String pac){
         String ackNumber = pac.substring(0 , 6);
         String acknowledgementHeader = ackNumber + "|ACK";
         return acknowledgementHeader;
     }
-
 
     public void findFileToSave(){
 
@@ -132,6 +150,7 @@ public class TransportLayer implements headerInterface{
     public String writeFooter() {
         return null;
     }
+
     @Override
     public String readFooter() {
         return null;

@@ -6,6 +6,6 @@ public interface headerInterface {
 
     public String writeHeader();
     public String writeFooter();
-    public String readHeader();
+    public String readHeader(String packet);
     public String readFooter();
 }

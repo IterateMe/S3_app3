@@ -10,7 +10,7 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
 
-        DatagramSocket socket = new DatagramSocket(25101);
+        DatagramSocket socket = new DatagramSocket();
 
         AppliLayer application =  new AppliLayer(args[0]);
         application.readFile();
@@ -26,10 +26,10 @@ public class Client {
             System.out.println(i);
             try {
                 String dataGramme = transport.getPayloads().get(i);
-                byte[] buf = new byte[256];
+                byte[] buf = new byte[1024];
                 buf = dataGramme.getBytes();
                 InetAddress address = InetAddress.getByName(args[1]);
-                DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 25101);
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 25800);
                 socket.send(packet);
 
             } catch (IOException e) {
@@ -37,10 +37,10 @@ public class Client {
             }
 
             //Receive and treat acknowledgement
-            byte[] buf = new byte[256];
-            DatagramPacket packet = new DatagramPacket(buf, buf.length);
-            socket.receive(packet);
-            String received = new String(packet.getData(), 0, packet.getLength());
+            //byte[] buf = new byte[256];
+            //DatagramPacket packet = new DatagramPacket(buf, buf.length);
+            //socket.receive(packet);
+            //String received = new String(packet.getData(), 0, packet.getLength());
         }
 
         socket.close();

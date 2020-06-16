@@ -12,7 +12,7 @@ public class DataLinkLayer implements headerInterface{
     }
 
     @Override
-    public String readHeader() {
+    public String readHeader(String packet) {
         return null;
     }
 

@@ -1,3 +1,7 @@
+import headers.AppliLayer;
+import headers.DataLinkLayer;
+import headers.TransportLayer;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -8,24 +12,41 @@ public class ServerThread extends Thread {
     public Vector<String> receptionBuffer = new Vector<>();
     String fileName = "";
 
-    public ServerThread() throws IOException {
-        socket = new DatagramSocket(25101);
-    }
-    public void run(){
+    AppliLayer application;
+    TransportLayer transport;
+    DataLinkLayer dataLink;
 
+    String[] args;
+
+    public ServerThread(String[] args) throws IOException {
+        socket = new DatagramSocket(25800);
+        this.args = args;
+
+        application =  new AppliLayer(args[0]);
+        transport = new TransportLayer(args[0]);
+        dataLink = new DataLinkLayer();
+
+        System.out.println("RUN");
+        run();
+    }
+
+    public void run(){
         boolean keepListening = true;
+
         while(keepListening){
 
-            byte[] buf = new byte[256];
+            byte[] buf = new byte[1024];
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
+
             try {
                 socket.receive(packet);
                 String received = new String(packet.getData(), 0, packet.getLength());
-                receptionBuffer.add(received);
+
+                transport.readHeader(received);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
         socket.close();
     }

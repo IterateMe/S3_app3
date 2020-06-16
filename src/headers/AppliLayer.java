@@ -77,7 +77,7 @@ public class AppliLayer implements headerInterface{
     }
 
     @Override
-    public String readHeader() {
+    public String readHeader(String packet) {
         return null;
     }
 
