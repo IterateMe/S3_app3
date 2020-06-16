@@ -7,7 +7,7 @@ import java.util.Vector;
 public class TransportLayer implements headerInterface{
     String file;
     String content = "";
-    int headerLength = 7;
+    public boolean transmissionError = false;
     int errorCount = 0;
     public boolean transactionCompleted = false;
     Vector<String> payloads = new Vector<>();
@@ -36,7 +36,7 @@ public class TransportLayer implements headerInterface{
     }
 
     @Override
-    public String readHeader(String packet) {
+    public String readHeader(String packet) throws TransmissionErrorException {
         //Calculer la taille du fichier
         //Premier packet sera le nom du fichier a ecrire dans le repertoire local du serveur
         //Declarer la connexion perdu si plus de 3 erreurs
@@ -50,13 +50,18 @@ public class TransportLayer implements headerInterface{
         Integer totPacket = Integer.valueOf(header.substring(4));
         Integer payloadSyze = payloads.size();
 
+        if(numPacket==1){
+            this.file = payload;
+        }
         if(numPacket != payloadSyze){
             errorCount +=1;
+            System.out.println("An error occured : error no " + errorCount);
             /////////////////////////////////////////////////////
             //RESEND
             if(errorCount == 3){
                 //////////////////////////////////////////////////////
-                //throw TransmissionErrorException;
+                String message = "The transmission failed three times, this transmission has ended";
+                throw new TransmissionErrorException(message, transmissionError);
             }
             // This loop puts empty strings in the vector where the missing data is
             for(int i=0; i< numPacket-payloadSyze; i++){
@@ -73,7 +78,7 @@ public class TransportLayer implements headerInterface{
     }
 
     public String setFixedLengthString(int size, String origin){
-        while(origin.length() != size){
+        while(origin.length() < size){
             origin = "0" + origin;
         }
         return origin;
@@ -96,25 +101,25 @@ public class TransportLayer implements headerInterface{
     public void chunk(){
         int length = content.length();
         int lastPayload;
-        if(length%200 > 0) {
+        if(length%100 > 0) {
             lastPayload = 1;
         }else{
             lastPayload = 0;
         }
-        int numPayloads = length/200;
+        int numPayloads = length/100;
 
         for(int i=0; i<numPayloads; i++){
             String payload = "";
-            for(int j=0; j<200; j++){
-                payload += content.charAt((i*200)+j);
+            for(int j=0; j<100; j++){
+                payload += content.charAt((i*100)+j);
             }
             payloads.add(payload);
             //System.out.println(payload);
         }
         if(lastPayload == 1){
             String payload = "";
-            for(int j=0; j<length%200; j++){
-                payload += content.charAt((numPayloads*200)+j);
+            for(int j=0; j<length%100; j++){
+                payload += content.charAt((numPayloads*100)+j);
             }
             payloads.add(payload);
             //System.out.println(payload);
@@ -138,15 +143,10 @@ public class TransportLayer implements headerInterface{
     //Methods for the readHeader() method
     ////////////////////////////////////////////////////////////
     public String createAcknowledgement(String pac){
-        String ackNumber = pac.substring(0 , 6);
+        String ackNumber = pac.substring(0 , 4);
         String acknowledgementHeader = ackNumber + "|ACK";
         return acknowledgementHeader;
     }
-
-    public void findFileToSave(){
-
-    }
-
     public String getContentForAppliLayer(){
         return content;
     }

@@ -9,9 +9,14 @@ import java.util.Scanner;
 public class AppliLayer implements headerInterface{
     private String content = "";
     public String file;
+    public boolean transmissionError = false;
 
     public AppliLayer(String file){
         this.file = file;
+    }
+
+    public void setFileName(String fileName){
+        this.file = fileName;
     }
 
     public void readFile(){
@@ -30,11 +35,11 @@ public class AppliLayer implements headerInterface{
         //System.out.println("CONTENT: \n" + content);
     }
 
-    public void writeFile(String fileName){
+    public void writeFile(){
         boolean alreadyexists = false;
-
+        file = "received_"+file;
         try {
-            File myObj = new File(fileName);
+            File myObj = new File(file);
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
             } else {
@@ -46,7 +51,7 @@ public class AppliLayer implements headerInterface{
         }
 
         try {
-            FileWriter myWriter = new FileWriter(fileName, false);  // false means it will override the original content
+            FileWriter myWriter = new FileWriter(file, false);  // false means it will override the original content
             myWriter.write(content);
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
